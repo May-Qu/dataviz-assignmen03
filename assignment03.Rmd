@@ -49,7 +49,7 @@ ggplot(data = state2, mapping = aes(x = TOTAL_EXPENSE, y = TOTAL_REVENUE)) +
   ggtitle("Expense and Revenue of college athletic programs",subtitle = "California")+
   labs(caption = "Data Source: EADA")
 ```
-#This picture uses California as an example to describe the relationship between revenue and expense of college athletic program. According to the fitted curve,expense and revenue are positively correlated.Also,the slope of the fitted curve is higher than 1.
+#This picture uses California as an example to describe the relationship between revenue and expense of college athletic program. According to the fitted curve,expense and revenue are positively correlated.Also,the slope of the fitted curve is higher than 1.The higher the expense, the higher the average revenue.Policy support for the expansion of propahse expense will help the program's sustainable development.
 ```{r}
 sailing <- filter(school1,Sports == 'Sailing')
 sailing <- rename(sailing,female = EFFemaleCount,male = EFMaleCount)
@@ -61,6 +61,7 @@ sailing3<-sailing2%>%
 sailing3 <- pivot_longer(sailing3,cols = c(-state_cd), names_to = "gender", values_to = "count")
 
 view(sailing3)
+view(sailing)
 ```
 
 
@@ -70,11 +71,11 @@ ggplot(sailing,aes(x=state_cd, y=EFTotalCount,fill=state_cd))+
   geom_boxplot()+
   xlab("State")+
   ylab("Total people")+
-  ggtitle("Total people in sailing")+
+  ggtitle("Total program participants in sailing")+
   labs(caption = "Data Source: EADA")+
   scale_y_continuous(limits = c(0,25000))
 ```
-#
+#This picture focuses on states with college sailing programs throughout the United States.The popularity of sailing projects is not high. Affected by factors such as geography, 11 states have college sailing programs.Of these, Florida has the largest program average number of participants.
 ```{r}
 
 
@@ -87,3 +88,4 @@ ggplot(sailing3,) +
   ggtitle("Number of female and male in sailing")+
   labs(caption = "Data Source: EADA")
 ```
+#This picture depicts gender differences in participants of sailing.Participants in this sport  have large gender differences in VA,SC,MA,HI,FL,and DC.Also, there are more female participants in sailing.Exploring the reasons for this may help the development of college sailing programs.

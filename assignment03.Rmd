@@ -9,8 +9,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r, message=FALSE, results='hide'}
 library(tidyverse)
-library(ggplot2)
 library(haven)
+options(scipen = 999)
 ```
 
 ```{r}
@@ -24,38 +24,66 @@ sports <- filter(sports,n>1200)
 ggplot(sports,mapping = aes(Sports,n))+
   geom_col(fill="darkgreen")+
   coord_flip()+
-  ylab("Number of clubs")+
-  theme_light(base_size = 12)
+  ylab("Number of college programs")+
+  theme_light(base_size = 12)+
+  ggtitle("Sports with more than 1200 college programs")+
+  labs(caption = "Data Source: EADA")+
+  scale_y_continuous(breaks = c(500,1000,1500,2000) )
+  
 ```
-
+#This picture illustrates sports with the largest number of college athletic programs in the state.This includes:Basketball,Volleyball,Baseball,Softball,Soccer,and Golf.The number of college athletic programs in each of these sports exceeds 1,200. Obviously, these sports are popular and well developed by colleges.
 ```{r}
 state <- count(school1,state_cd)
 arrange(.data = state, desc(n)) 
 state2 <- school1[which(school1$state_cd%in% c('CA')), ]
+state2 <- mutate(state2,TOTAL_EXPENSE=TOTAL_EXPENSE_ALL/1000,TOTAL_REVENUE=TOTAL_REVENUE_ALL/1000)
+view(state2)
 ```
 
 ```{r}
-ggplot(data = state2, mapping = aes(x = TOTAL_EXPENSE_ALL, y = TOTAL_REVENUE_ALL)) +
-  geom_point(colour = "darkgreen") +
+ggplot(data = state2, mapping = aes(x = TOTAL_EXPENSE, y = TOTAL_REVENUE)) +
+  geom_point(color = "darkgreen") +
   geom_smooth(color="orange")+
-  ylab("Total revenue of clubs in California")+
-  xlab("Total expnese of clubs in California")
+  ylab("Total revenue(thousand dollars) ")+
+  xlab("Total expnese(thousand dollars) ")+
+  ggtitle("Expense and Revenue of college athletic programs",subtitle = "California")+
+  labs(caption = "Data Source: EADA")
+```
+#This picture uses California as an example to describe the relationship between revenue and expense of college athletic program. According to the fitted curve,expense and revenue are positively correlated.Also,the slope of the fitted curve is higher than 1.
+```{r}
+sailing <- filter(school1,Sports == 'Sailing')
+sailing <- rename(sailing,female = EFFemaleCount,male = EFMaleCount)
+sailing2 <- select(sailing,state_cd,female,male)
+sailing3<-sailing2%>%
+  group_by(state_cd)%>%
+  summarize(Female=sum(female),Male=sum(male))
+
+sailing3 <- pivot_longer(sailing3,cols = c(-state_cd), names_to = "gender", values_to = "count")
+
+view(sailing3)
 ```
 
-```{r}
-sailing <- school1[which(school1$Sports%in% c('Sailing')), ]
-ggplot(sailing) +
-  geom_segment( aes(x=state_cd, xend=state_cd, y=EFMaleCount, yend=EFFemaleCount), color="grey") +
-  geom_point( aes(x=state_cd, y=EFMaleCount),color=rgb(0.2,0.7,0.1,0.5), size=2 ) +
-  geom_point( aes(x=state_cd,y=EFFemaleCount),color=rgb(0.7,0.2,0.1,0.5), size=2 ) +
-  coord_flip()+
-  xlab("State") +
-  ylab("Number of People")
-```
+
 
 ```{r}
-ggplot(sailing,aes(x=state_cd, y=EFTotalCount, fill=state_cd)) +
+ggplot(sailing,aes(x=state_cd, y=EFTotalCount,fill=state_cd))+
   geom_boxplot()+
   xlab("State")+
-  ylab("Total amount of people")
+  ylab("Total people")+
+  ggtitle("Total people in sailing")+
+  labs(caption = "Data Source: EADA")+
+  scale_y_continuous(limits = c(0,25000))
+```
+#
+```{r}
+
+
+ggplot(sailing3,) +
+  geom_line(aes( x=state_cd,y =count))+ 
+  geom_point(aes( x=state_cd,y =count,color = gender), size=2,alpha=0.5) +
+  coord_flip()+
+  xlab("State") +
+  ylab("Number of People")+
+  ggtitle("Number of female and male in sailing")+
+  labs(caption = "Data Source: EADA")
 ```
